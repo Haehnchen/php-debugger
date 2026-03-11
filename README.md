@@ -2,6 +2,8 @@
 
 A lightweight, high-performance PHP debugger extension. Forked from [Xdebug](https://xdebug.org/) by Derick Rethans, stripped down to pure debugging, and optimized for near-zero overhead when inactive.
 
+**🧪 This project is an experiment in how fast the PHP community can move using AI tools.** The entire extension — fork, strip, optimize, rename — was built in days, not months. We're here to run fast, stay open to change, and prove that PHP tooling doesn't need to be gatekept.
+
 ## Why PHP Debugger?
 
 - **+4% overhead** when loaded but inactive (vs +324% in Xdebug)
