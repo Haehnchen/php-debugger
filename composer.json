@@ -3,7 +3,7 @@
     "type": "php-ext-zend",
     "license": "Xdebug-1.03",
     "description": "A lightweight, high-performance PHP debugger. Drop-in Xdebug replacement focused on debugging.",
-    "homepage": "https://github.com/pronskiy/php-debugger-src",
+    "homepage": "https://github.com/pronskiy/php-debugger",
     "authors": [
         {
             "name": "Roman Pronskiy",
