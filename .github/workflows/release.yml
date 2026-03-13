@@ -78,49 +78,32 @@ jobs:
                     - '8.5'
         runs-on: windows-2022
         name: "Windows — PHP ${{ matrix.php-version }}"
-        defaults:
-            run:
-                shell: cmd
         steps:
             -   uses: actions/checkout@v6
 
-            -   name: Setup PHP SDK
-                id: setup-php-sdk
-                uses: php/setup-php-sdk@v0.12
+            -   name: Build the extension
+                uses: php/php-windows-builder/extension@v1
                 with:
-                    version: ${{ matrix.php-version }}
+                    php-version: ${{ matrix.php-version }}
                     arch: x64
                     ts: nts
-
-            -   name: Enable Developer Command Prompt
-                uses: ilammy/msvc-dev-cmd@v1
-                with:
-                    arch: x64
-                    toolset: ${{ steps.setup-php-sdk.outputs.toolset }}
-
-            -   name: phpize
-                run: phpize
-
-            -   name: configure
-                run: configure.bat --enable-php-debugger --with-prefix=${{ steps.setup-php-sdk.outputs.prefix }}
-
-            -   name: nmake
-                run: nmake
-
-            -   name: Verify extension loads
-                run: |
-                    php -dzend_extension=php_debugger.dll -v
-                    php -dzend_extension=php_debugger.dll -r "echo 'xdebug_info() works: ' . (function_exists('xdebug_info') ? 'yes' : 'no') . PHP_EOL;"
+                    args: --enable-debugger
+                    run-tests: false
 
             -   name: Package artifact
                 id: package
-                shell: bash
+                shell: pwsh
                 run: |
-                    PHP_VER=$(php -r "echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;")
-                    ASSET_NAME="php-debugger-php${PHP_VER}-windows-x64.dll"
-                    DLL=$(find . -name 'php_debugger.dll' -print -quit)
-                    cp "$DLL" "${ASSET_NAME}"
-                    echo "asset_name=${ASSET_NAME}" >> $GITHUB_OUTPUT
+                    $phpVer = "${{ matrix.php-version }}"
+                    $assetName = "php-debugger-php${phpVer}-windows-x64.dll"
+                    $dll = Get-ChildItem -Path $env:RUNNER_TEMP -Recurse -Filter 'php_debugger.dll' -ErrorAction SilentlyContinue | Select-Object -First 1
+                    if (-not $dll) {
+                        $dll = Get-ChildItem -Recurse -Filter 'php_debugger.dll' -ErrorAction SilentlyContinue | Select-Object -First 1
+                    }
+                    if (-not $dll) { Write-Error "php_debugger.dll not found"; exit 1 }
+                    Write-Host "Found DLL at: $($dll.FullName)"
+                    Copy-Item $dll.FullName -Destination $assetName
+                    echo "asset_name=${assetName}" >> $env:GITHUB_OUTPUT
 
             -   name: Upload artifact
                 uses: actions/upload-artifact@v4
