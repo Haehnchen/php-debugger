@@ -77,6 +77,14 @@ Works as-is. Just swap the extension and your existing debug configurations work
 
 Works as-is. No changes needed.
 
+### Agents
+
+[Agents CLI](cli/README.md)
+
+```
+dbg -breakpoint src/Controller/HomeController.php:25
+```
+
 ## Xdebug Compatibility
 
 PHP Debugger is a drop-in replacement for Xdebug\'s debug mode:
